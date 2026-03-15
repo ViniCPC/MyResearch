@@ -1,0 +1,64 @@
+# backend
+backend/dist
+backend/node_modules
+backend/build
+backend/coverage
+
+# logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# testes
+.nyc_output
+
+# IDEs e editores
+.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# variáveis de ambiente da raiz
+.env
+.env.*
+!.env.example
+
+
+# variáveis de ambiente
+backend/.env
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+backend/.env.local
+!backend/.env.example
+
+# temp
+.temp
+.tmp
+
+# runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

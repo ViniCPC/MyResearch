@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User {
+  id            String     @id @default(uuid())
+  name          String
+  email         String     @unique
+  passwordHash  String
+  walletAddress String?
+  role          Role
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  ownedProjects Project[]  @relation("UserProjects")
+  donations     Donation[] @relation("UserDonations")
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  title           String
+  description     String
+  goalAmount      Decimal       @db.Decimal(10, 2)
+  ownerId         String
+  imageUrl        String?
+  contractAddress String?
+  status          ProjectStatus @default(DRAFT)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  owner           User          @relation("UserProjects", fields: [ownerId], references: [id])
+  milestones      Milestone[]
+  donations       Donation[]
+}
+
+
+model Milestone {
+  id          String   @id @default(uuid())
+  projectId   String
+  title       String
+  description String
+  amount      Decimal  @db.Decimal(10, 2)
+  order       Int
+  released    Boolean  @default(false)
+  txHash      String?
+  createdAt   DateTime @default(now())
+
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([projectId, order])
+}
+
+model Donation {
+  id        String   @id @default(uuid())
+  projectId String
+  donorId   String
+  amount    Decimal  @db.Decimal(10, 2)
+  txHash    String?
+  createdAt DateTime @default(now())
+
+  project   Project  @relation(fields: [projectId], references: [id])
+  donor     User     @relation("UserDonations", fields: [donorId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  RESEARCHER
+  DONOR
+}
+
+enum ProjectStatus {
+  DRAFT
+  ACTIVE
+  FUNDED
+  COMPLETED
+  CANCELLED
+}
