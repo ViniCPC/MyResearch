@@ -16,6 +16,7 @@ model User {
   name          String
   email         String     @unique
   passwordHash  String
+  institutionName String?
   walletAddress String?
   role          Role
   createdAt     DateTime   @default(now())
