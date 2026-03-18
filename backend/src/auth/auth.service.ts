@@ -5,7 +5,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { Role } from "generated/prisma/enums";
 
 @Injectable()
-export class authUser {
+export class  AuthService {
     constructor(private readonly prisma: PrismaService) {}
     async regiterUser(dto: CreateUserDto) {
         const userExisting = await this.prisma.user.findUnique({
