@@ -9,7 +9,7 @@ export class AuthResearcher {
     constructor(private readonly prisma: PrismaService) {}
 
     async registerResearcher(dto: CreateResearcherDto) {
-        const emailExisting = await this.prisma.user.findFirst({
+        const emailExisting = await this.prisma.user.findUnique({
             where: {email: dto.email}
         })
 
