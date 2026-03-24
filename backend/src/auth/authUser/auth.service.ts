@@ -6,8 +6,8 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/dto/dto.users/dto.user';
-import { LoginDto } from 'src/dto/dto.login/dto.login';
+import { CreateUserDto } from 'src/auth/dto/dto.users/dto.user';
+import { LoginDto } from 'src/auth/dto/dto.login/dto.login';
 import { Role } from 'generated/prisma/enums';
 
 @Injectable()
