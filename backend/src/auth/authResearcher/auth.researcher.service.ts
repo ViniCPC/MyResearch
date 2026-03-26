@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { CreateResearcherDto } from "src/auth/dto/dto.users.researcher/dto.users.researcher";
+import { CreateResearcherDto } from "src/auth/dto/dto.auth/dto.users.researcher/dto.users.researcher";
 import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrpty from 'bcrypt';
 import { Role } from "generated/prisma/enums";
