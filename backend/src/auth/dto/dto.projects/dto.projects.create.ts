@@ -17,10 +17,6 @@ export class CreateProjectDto {
   goalAmount: number;
 
   @IsOptional()
-  @IsString()
-  ownerId?: string;
-
-  @IsOptional()
   @IsUrl()
   imageUrl?: string;
 
