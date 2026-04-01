@@ -37,6 +37,7 @@ model Project {
   status          ProjectStatus @default(DRAFT)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
 
   owner           User          @relation("UserProjects", fields: [ownerId], references: [id])
   milestones      Milestone[]

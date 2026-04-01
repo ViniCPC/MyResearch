@@ -1,7 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { CreateProjectDto } from "src/auth/dto/dto.projects/dto.projects.create";
-import { QueryProjectDto } from "src/auth/dto/dto.projects/dto.query.project";
-import { PrismaService } from "src/prisma/prisma.service";
+import {
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateProjectDto } from 'src/auth/dto/dto.projects/dto.projects.create'; 
+import { QueryProjectDto } from 'src/auth/dto/dto.projects/dto.query.project'; 
 
 @Injectable()
 export class ProjectsService {
@@ -19,7 +22,7 @@ export class ProjectsService {
     updatedAt: true,
   } as const;
 
-  async createProjects(dto: CreateProjectDto, userId: string) {
+  async createProject(dto: CreateProjectDto, userId: string) {
     try {
       const project = await this.prisma.project.create({
         data: {
@@ -31,12 +34,75 @@ export class ProjectsService {
 
       return project;
     } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException(
-        'Erro ao tentar criar um novo projeto',
-      );
+      throw new BadRequestException('Erro ao tentar criar um novo projeto');
     }
   }
 
-}
+  async getAllProjects(query: QueryProjectDto, userId: string) {
+    try {
+      const { search, status, page, pageSize, sortBy, order } = query;
 
+      const skip = (page - 1) * pageSize;
+
+      const where = {
+        ownerId: userId,
+        ...(status && { status }),
+        ...(search && {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: 'insensitive' as const,
+              },
+            },
+            {
+              description: {
+                contains: search,
+                mode: 'insensitive' as const,
+              },
+            },
+          ],
+        }),
+      };
+
+      const [projects, total] = await this.prisma.$transaction([
+        this.prisma.project.findMany({
+          where,
+          skip,
+          take: pageSize,
+          orderBy: {
+            [sortBy]: order,
+          },
+          select: this.select,
+        }),
+        this.prisma.project.count({
+          where,
+        }),
+      ]);
+
+      return {
+        data: projects,
+        meta: {
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        },
+      };
+    } catch (error) {
+        console.error(error);
+        throw new BadRequestException('Erro ao buscar os projetos');
+    }
+  }
+
+  async projectById(id: string) {
+    try {
+        const project = await this.prisma.project.findFirst({
+            where: {id},
+                
+        })
+    } catch (error) {
+        
+    }
+  }
+}
