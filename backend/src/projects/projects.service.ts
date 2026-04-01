@@ -1,10 +1,12 @@
 import {
   BadRequestException,
   Injectable,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from 'src/auth/dto/dto.projects/dto.projects.create'; 
 import { QueryProjectDto } from 'src/auth/dto/dto.projects/dto.query.project'; 
+import { updateProjectDto } from 'src/auth/dto/dto.projects/dto.project.update';
 
 @Injectable()
 export class ProjectsService {
@@ -46,6 +48,7 @@ export class ProjectsService {
 
       const where = {
         ownerId: userId,
+        deletedAt: null,
         ...(status && { status }),
         ...(search && {
           OR: [
@@ -98,11 +101,28 @@ export class ProjectsService {
   async projectById(id: string) {
     try {
         const project = await this.prisma.project.findFirst({
-            where: {id},
-                
+            where: {id, deletedAt: null},
+            select: this.select
         })
+
+        if(!project) {
+            throw new NotAcceptableException("Projeto não encontrado");
+        }
+
+        return project;
     } catch (error) {
-        
+        console.error(error);
+        throw new BadRequestException("Erro ao tentar encotrar o projeto");
     }
+  }
+
+  async updateProject(id: string, dto: updateProjectDto) {
+    const project = await this.prisma.project.updateMany({
+        where: {id, deletedAt: null},
+        data: dto
+    })
+
+
+
   }
 }

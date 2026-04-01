@@ -45,6 +45,7 @@ export type ProjectMinAggregateOutputType = {
   status: $Enums.ProjectStatus | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type ProjectMaxAggregateOutputType = {
@@ -58,6 +59,7 @@ export type ProjectMaxAggregateOutputType = {
   status: $Enums.ProjectStatus | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type ProjectCountAggregateOutputType = {
@@ -71,6 +73,7 @@ export type ProjectCountAggregateOutputType = {
   status: number
   createdAt: number
   updatedAt: number
+  deletedAt: number
   _all: number
 }
 
@@ -94,6 +97,7 @@ export type ProjectMinAggregateInputType = {
   status?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type ProjectMaxAggregateInputType = {
@@ -107,6 +111,7 @@ export type ProjectMaxAggregateInputType = {
   status?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type ProjectCountAggregateInputType = {
@@ -120,6 +125,7 @@ export type ProjectCountAggregateInputType = {
   status?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
   _all?: true
 }
 
@@ -220,6 +226,7 @@ export type ProjectGroupByOutputType = {
   status: $Enums.ProjectStatus
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
   _count: ProjectCountAggregateOutputType | null
   _avg: ProjectAvgAggregateOutputType | null
   _sum: ProjectSumAggregateOutputType | null
@@ -256,6 +263,7 @@ export type ProjectWhereInput = {
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   milestones?: Prisma.MilestoneListRelationFilter
   donations?: Prisma.DonationListRelationFilter
@@ -272,6 +280,7 @@ export type ProjectOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
   milestones?: Prisma.MilestoneOrderByRelationAggregateInput
   donations?: Prisma.DonationOrderByRelationAggregateInput
@@ -291,6 +300,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   milestones?: Prisma.MilestoneListRelationFilter
   donations?: Prisma.DonationListRelationFilter
@@ -307,6 +317,7 @@ export type ProjectOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
   _avg?: Prisma.ProjectAvgOrderByAggregateInput
   _max?: Prisma.ProjectMaxOrderByAggregateInput
@@ -328,6 +339,7 @@ export type ProjectScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
 }
 
 export type ProjectCreateInput = {
@@ -340,6 +352,7 @@ export type ProjectCreateInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   owner: Prisma.UserCreateNestedOneWithoutOwnedProjectsInput
   milestones?: Prisma.MilestoneCreateNestedManyWithoutProjectInput
   donations?: Prisma.DonationCreateNestedManyWithoutProjectInput
@@ -356,6 +369,7 @@ export type ProjectUncheckedCreateInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   milestones?: Prisma.MilestoneUncheckedCreateNestedManyWithoutProjectInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -370,6 +384,7 @@ export type ProjectUpdateInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
   milestones?: Prisma.MilestoneUpdateManyWithoutProjectNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProjectNestedInput
@@ -386,6 +401,7 @@ export type ProjectUncheckedUpdateInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   milestones?: Prisma.MilestoneUncheckedUpdateManyWithoutProjectNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -401,6 +417,7 @@ export type ProjectCreateManyInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type ProjectUpdateManyMutationInput = {
@@ -413,6 +430,7 @@ export type ProjectUpdateManyMutationInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProjectUncheckedUpdateManyInput = {
@@ -426,6 +444,7 @@ export type ProjectUncheckedUpdateManyInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProjectListRelationFilter = {
@@ -449,6 +468,7 @@ export type ProjectCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type ProjectAvgOrderByAggregateInput = {
@@ -466,6 +486,7 @@ export type ProjectMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type ProjectMinOrderByAggregateInput = {
@@ -479,6 +500,7 @@ export type ProjectMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type ProjectSumOrderByAggregateInput = {
@@ -544,6 +566,10 @@ export type EnumProjectStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProjectStatus
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type ProjectCreateNestedOneWithoutMilestonesInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutMilestonesInput, Prisma.ProjectUncheckedCreateWithoutMilestonesInput>
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutMilestonesInput
@@ -582,6 +608,7 @@ export type ProjectCreateWithoutOwnerInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   milestones?: Prisma.MilestoneCreateNestedManyWithoutProjectInput
   donations?: Prisma.DonationCreateNestedManyWithoutProjectInput
 }
@@ -596,6 +623,7 @@ export type ProjectUncheckedCreateWithoutOwnerInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   milestones?: Prisma.MilestoneUncheckedCreateNestedManyWithoutProjectInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -640,6 +668,7 @@ export type ProjectScalarWhereInput = {
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
 }
 
 export type ProjectCreateWithoutMilestonesInput = {
@@ -652,6 +681,7 @@ export type ProjectCreateWithoutMilestonesInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   owner: Prisma.UserCreateNestedOneWithoutOwnedProjectsInput
   donations?: Prisma.DonationCreateNestedManyWithoutProjectInput
 }
@@ -667,6 +697,7 @@ export type ProjectUncheckedCreateWithoutMilestonesInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -696,6 +727,7 @@ export type ProjectUpdateWithoutMilestonesInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProjectNestedInput
 }
@@ -711,6 +743,7 @@ export type ProjectUncheckedUpdateWithoutMilestonesInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -724,6 +757,7 @@ export type ProjectCreateWithoutDonationsInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   owner: Prisma.UserCreateNestedOneWithoutOwnedProjectsInput
   milestones?: Prisma.MilestoneCreateNestedManyWithoutProjectInput
 }
@@ -739,6 +773,7 @@ export type ProjectUncheckedCreateWithoutDonationsInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   milestones?: Prisma.MilestoneUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -768,6 +803,7 @@ export type ProjectUpdateWithoutDonationsInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
   milestones?: Prisma.MilestoneUpdateManyWithoutProjectNestedInput
 }
@@ -783,6 +819,7 @@ export type ProjectUncheckedUpdateWithoutDonationsInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   milestones?: Prisma.MilestoneUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -796,6 +833,7 @@ export type ProjectCreateManyOwnerInput = {
   status?: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type ProjectUpdateWithoutOwnerInput = {
@@ -808,6 +846,7 @@ export type ProjectUpdateWithoutOwnerInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   milestones?: Prisma.MilestoneUpdateManyWithoutProjectNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProjectNestedInput
 }
@@ -822,6 +861,7 @@ export type ProjectUncheckedUpdateWithoutOwnerInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   milestones?: Prisma.MilestoneUncheckedUpdateManyWithoutProjectNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -836,6 +876,7 @@ export type ProjectUncheckedUpdateManyWithoutOwnerInput = {
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -889,6 +930,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   milestones?: boolean | Prisma.Project$milestonesArgs<ExtArgs>
   donations?: boolean | Prisma.Project$donationsArgs<ExtArgs>
@@ -906,6 +948,7 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -920,6 +963,7 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -934,9 +978,10 @@ export type ProjectSelectScalar = {
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "goalAmount" | "ownerId" | "imageUrl" | "contractAddress" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "goalAmount" | "ownerId" | "imageUrl" | "contractAddress" | "status" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   milestones?: boolean | Prisma.Project$milestonesArgs<ExtArgs>
@@ -968,6 +1013,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     status: $Enums.ProjectStatus
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
   }, ExtArgs["result"]["project"]>
   composites: {}
 }
@@ -1404,6 +1450,7 @@ export interface ProjectFieldRefs {
   readonly status: Prisma.FieldRef<"Project", 'ProjectStatus'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
+  readonly deletedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }
     
 

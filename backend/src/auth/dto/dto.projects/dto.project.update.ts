@@ -26,5 +26,5 @@
 
         @IsOptional()
         @IsEnum(ProjectStatus)
-        status: string;
+        status: ProjectStatus;
     }
