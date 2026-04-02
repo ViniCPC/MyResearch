@@ -2,7 +2,7 @@
     import { IsString, MaxLength, IsNumber, Min, IsOptional, IsUrl, IsEthereumAddress, IsEnum} from "class-validator";
     import { ProjectStatus } from "generated/prisma/enums";
 
-    export class updateProjectDto {
+    export class UpdateProjectDto {
         @IsString()
         @MaxLength(150)
         title: string

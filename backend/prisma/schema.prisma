@@ -33,7 +33,7 @@ model Project {
   goalAmount      Decimal       @db.Decimal(10, 2)
   ownerId         String
   imageUrl        String?
-  contractAddress String?
+  contractAddress String? 
   status          ProjectStatus @default(DRAFT)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt

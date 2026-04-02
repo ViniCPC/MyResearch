@@ -1,12 +1,12 @@
 import {
   BadRequestException,
   Injectable,
-  NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from 'src/auth/dto/dto.projects/dto.projects.create'; 
 import { QueryProjectDto } from 'src/auth/dto/dto.projects/dto.query.project'; 
-import { updateProjectDto } from 'src/auth/dto/dto.projects/dto.project.update';
+import { UpdateProjectDto } from 'src/auth/dto/dto.projects/dto.project.update';
 
 @Injectable()
 export class ProjectsService {
@@ -36,6 +36,7 @@ export class ProjectsService {
 
       return project;
     } catch (error) {
+      console.error(error);
       throw new BadRequestException('Erro ao tentar criar um novo projeto');
     }
   }
@@ -43,7 +44,6 @@ export class ProjectsService {
   async getAllProjects(query: QueryProjectDto, userId: string) {
     try {
       const { search, status, page, pageSize, sortBy, order } = query;
-
       const skip = (page - 1) * pageSize;
 
       const where = {
@@ -78,9 +78,7 @@ export class ProjectsService {
           },
           select: this.select,
         }),
-        this.prisma.project.count({
-          where,
-        }),
+        this.prisma.project.count({ where }),
       ]);
 
       return {
@@ -93,36 +91,69 @@ export class ProjectsService {
         },
       };
     } catch (error) {
-        console.error(error);
-        throw new BadRequestException('Erro ao buscar os projetos');
+      console.error(error);
+      throw new BadRequestException('Erro ao buscar os projetos');
     }
   }
 
-  async projectById(id: string) {
-    try {
-        const project = await this.prisma.project.findFirst({
-            where: {id, deletedAt: null},
-            select: this.select
-        })
+  async projectById(id: string, userId: string) {
+    const project = await this.prisma.project.findFirst({
+      where: {
+        id,
+        ownerId: userId,
+        deletedAt: null,
+      },
+      select: this.select,
+    });
 
-        if(!project) {
-            throw new NotAcceptableException("Projeto não encontrado");
-        }
-
-        return project;
-    } catch (error) {
-        console.error(error);
-        throw new BadRequestException("Erro ao tentar encotrar o projeto");
+    if (!project) {
+      throw new NotFoundException('Projeto não encontrado');
     }
+
+    return project;
   }
 
-  async updateProject(id: string, dto: updateProjectDto) {
-    const project = await this.prisma.project.updateMany({
-        where: {id, deletedAt: null},
-        data: dto
-    })
+  async updateProject(id: string, dto: UpdateProjectDto, userId: string) {
+    const projectExists = await this.prisma.project.findFirst({
+      where: {
+        id,
+        ownerId: userId,
+        deletedAt: null,
+      },
+    });
 
+    if (!projectExists) {
+      throw new NotFoundException('Projeto não encontrado');
+    }
 
+    const project = await this.prisma.project.update({
+      where: { id },
+      data: dto,
+      select: this.select,
+    });
 
+    return project;
+  }
+
+  async removeProject(id: string, userId: string) {
+    const projectExists = await this.prisma.project.findFirst({
+      where: {
+        id,
+        ownerId: userId,
+        deletedAt: null,
+      },
+    });
+
+    if (!projectExists) {
+      throw new NotFoundException('Projeto não encontrado');
+    }
+
+    const project = await this.prisma.project.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+      select: this.select,
+    });
+
+    return project;
   }
 }
