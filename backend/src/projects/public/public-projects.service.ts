@@ -5,7 +5,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ProjectsServicePublic {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private readonly prisma: PrismaService) {}
 
     private readonly select = {
         id: true,
