@@ -50,7 +50,7 @@ export class ProjectsService {
         ownerId: userId,
         deletedAt: null,
         ...(status && { status }),
-        ...(search && {
+        ...(search && { 
           OR: [
             {
               title: {
