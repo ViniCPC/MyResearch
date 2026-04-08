@@ -91,4 +91,32 @@ export class MilestoneService {
 
     return milestone;
   }
+
+  async listProjectMilestones(projectId: string) {
+  const projectExists = await this.prisma.project.findFirst({
+    where: {
+      id: projectId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!projectExists) {
+    throw new NotFoundException('Projeto não encontrado');
+  }
+
+  const milestones = await this.prisma.milestone.findMany({
+    where: {
+      projectId,
+    },
+    orderBy: {
+      order: 'asc',
+    },
+    select: this.select,
+  });
+
+  return milestones;
+}
 }
