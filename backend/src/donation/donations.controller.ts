@@ -19,6 +19,7 @@ export class DonationsController {
   constructor(private readonly donationsService: DonationsService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.DONOR)
   @Post(':id/donations/register')
   registerDonation(
     @Param('id') projectId: string,
