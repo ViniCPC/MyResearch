@@ -7,19 +7,16 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { DonationsService } from './donation.service'; 
-import { RegisterDonationDto } from './dto/donation.create.dto'; 
+import { DonationsService } from './donation.service';
+import { RegisterDonationDto } from './dto/donation.create.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'generated/prisma/enums';
 
 @Controller('projects')
 export class DonationsController {
   constructor(private readonly donationsService: DonationsService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.DONOR)
+  @UseGuards(JwtAuthGuard)
   @Post(':id/donations/register')
   registerDonation(
     @Param('id') projectId: string,

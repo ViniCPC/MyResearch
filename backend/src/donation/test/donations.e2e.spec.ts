@@ -185,7 +185,7 @@ describe('Donations E2E', () => {
       expect(response.status).toBe(401);
     });
 
-    it('não deve permitir doação com usuário que não é DONOR', async () => {
+    it('deve permitir doação com usuário autenticado que não é DONOR', async () => {
       const response = await request(app.getHttpServer())
         .post(`/projects/${projectId}/donations/register`)
         .set('Authorization', `Bearer ${researcherToken}`)
@@ -194,7 +194,11 @@ describe('Donations E2E', () => {
           txHash: '0xhashrole123456',
         });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(201);
+      expect(response.body.projectId).toBe(projectId);
+      expect(response.body.donorId).toBe(researcherId);
+      expect(response.body.txHash).toBe('0xhashrole123456');
+      expect(Number(response.body.amount)).toBe(100);
     });
   });
 

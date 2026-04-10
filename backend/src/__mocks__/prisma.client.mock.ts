@@ -7,16 +7,9 @@ const isObject = (value: unknown): value is Record<string, any> => {
 const matchWhere = (item: Record<string, any>, where?: Where): boolean => {
   if (!where) return true;
 
-  if (Array.isArray(where.OR)) {
-    return where.OR.some((cond) => matchWhere(item, cond));
-  }
+  const { OR, AND, ...rest } = where;
 
-  if (Array.isArray(where.AND)) {
-    return where.AND.every((cond) => matchWhere(item, cond));
-  }
-
-  return Object.entries(where).every(([key, value]) => {
-    if (key === 'OR' || key === 'AND') return true;
+  const restMatches = Object.entries(rest).every(([key, value]) => {
     const itemValue = item[key];
 
     if (isObject(value)) {
@@ -42,6 +35,15 @@ const matchWhere = (item: Record<string, any>, where?: Where): boolean => {
 
     return itemValue === value;
   });
+
+  const andMatches = Array.isArray(AND)
+    ? AND.every((cond) => matchWhere(item, cond))
+    : true;
+  const orMatches = Array.isArray(OR)
+    ? OR.some((cond) => matchWhere(item, cond))
+    : true;
+
+  return restMatches && andMatches && orMatches;
 };
 
 const applySelect = <T extends Record<string, any>>(
@@ -70,6 +72,44 @@ const applySelect = <T extends Record<string, any>>(
   }
 
   return result;
+};
+
+const sortByOrder = <T extends Record<string, any>>(
+  items: T[],
+  orderBy?: Record<string, 'asc' | 'desc'>,
+): T[] => {
+  if (!orderBy) return items;
+  const entry = Object.entries(orderBy)[0];
+  if (!entry) return items;
+  const [key, dir] = entry;
+
+  const sorted = [...items].sort((a, b) => {
+    const av = a[key];
+    const bv = b[key];
+
+    let cmp = 0;
+    if (av instanceof Date && bv instanceof Date) {
+      cmp = av.getTime() - bv.getTime();
+    } else if (typeof av === 'number' && typeof bv === 'number') {
+      cmp = av - bv;
+    } else if (typeof av === 'string' && typeof bv === 'string') {
+      cmp = av.localeCompare(bv);
+    } else {
+      cmp = String(av ?? '').localeCompare(String(bv ?? ''));
+    }
+
+    return dir === 'desc' ? -cmp : cmp;
+  });
+
+  return sorted;
+};
+
+const applyPagination = <T>(items: T[], skip?: number, take?: number): T[] => {
+  const start = skip ?? 0;
+  if (take === undefined) {
+    return items.slice(start);
+  }
+  return items.slice(start, start + take);
 };
 
 type User = {
@@ -226,18 +266,18 @@ export class PrismaClient {
       return project ? applySelect(project, args.select) : null;
     }),
     findMany: jest.fn(
-      async (args: { where?: Where; orderBy?: any; select?: any }) => {
+      async (args: {
+        where?: Where;
+        orderBy?: Record<string, 'asc' | 'desc'>;
+        select?: any;
+        skip?: number;
+        take?: number;
+      }) => {
         let projects = this.store.projects.filter((item) =>
           matchWhere(item, args.where),
         );
-        if (args.orderBy?.createdAt) {
-          const dir = args.orderBy.createdAt;
-          projects = projects.sort((a, b) =>
-            dir === 'desc'
-              ? b.createdAt.getTime() - a.createdAt.getTime()
-              : a.createdAt.getTime() - b.createdAt.getTime(),
-          );
-        }
+        projects = sortByOrder(projects, args.orderBy);
+        projects = applyPagination(projects, args.skip, args.take);
         return projects.map((item) => applySelect(item, args.select));
       },
     ),
@@ -290,18 +330,18 @@ export class PrismaClient {
       return applySelect(this.withDonationRelations(donation), args.select);
     }),
     findMany: jest.fn(
-      async (args: { where?: Where; orderBy?: any; select?: any }) => {
+      async (args: {
+        where?: Where;
+        orderBy?: Record<string, 'asc' | 'desc'>;
+        select?: any;
+        skip?: number;
+        take?: number;
+      }) => {
         let donations = this.store.donations.filter((item) =>
           matchWhere(item, args.where),
         );
-        if (args.orderBy?.createdAt) {
-          const dir = args.orderBy.createdAt;
-          donations = donations.sort((a, b) =>
-            dir === 'desc'
-              ? b.createdAt.getTime() - a.createdAt.getTime()
-              : a.createdAt.getTime() - b.createdAt.getTime(),
-          );
-        }
+        donations = sortByOrder(donations, args.orderBy);
+        donations = applyPagination(donations, args.skip, args.take);
         return donations.map((item) =>
           applySelect(this.withDonationRelations(item), args.select),
         );
@@ -321,6 +361,58 @@ export class PrismaClient {
   };
 
   milestone = {
+    create: jest.fn(async (args: { data: Partial<Milestone>; select?: any }) => {
+      const now = new Date();
+      const milestone: Milestone = {
+        id: this.nextId('milestone'),
+        projectId: args.data.projectId ?? '',
+        title: args.data.title ?? '',
+        description: args.data.description ?? '',
+        amount: Number(args.data.amount ?? 0),
+        order: Number(args.data.order ?? 1),
+        released: args.data.released ?? false,
+        txHash: args.data.txHash ?? null,
+        createdAt: now,
+      };
+      this.store.milestones.push(milestone);
+      return applySelect(milestone, args.select);
+    }),
+    findFirst: jest.fn(
+      async (args: { where?: Where; orderBy?: any; select?: any }) => {
+        let milestones = this.store.milestones.filter((item) =>
+          matchWhere(item, args.where),
+        );
+        milestones = sortByOrder(milestones, args.orderBy);
+        const milestone = milestones[0];
+        return milestone ? applySelect(milestone, args.select) : null;
+      },
+    ),
+    findMany: jest.fn(
+      async (args: {
+        where?: Where;
+        orderBy?: Record<string, 'asc' | 'desc'>;
+        select?: any;
+        skip?: number;
+        take?: number;
+      }) => {
+        let milestones = this.store.milestones.filter((item) =>
+          matchWhere(item, args.where),
+        );
+        milestones = sortByOrder(milestones, args.orderBy);
+        milestones = applyPagination(milestones, args.skip, args.take);
+        return milestones.map((item) => applySelect(item, args.select));
+      },
+    ),
+    aggregate: jest.fn(async (args: { where?: Where; _sum: { amount: true } }) => {
+      const milestones = this.store.milestones.filter((item) =>
+        matchWhere(item, args.where),
+      );
+      if (milestones.length === 0) {
+        return { _sum: { amount: null } };
+      }
+      const total = milestones.reduce((sum, item) => sum + Number(item.amount ?? 0), 0);
+      return { _sum: { amount: total } };
+    }),
     deleteMany: jest.fn(async (args?: { where?: Where }) => {
       const before = this.store.milestones.length;
       if (!args?.where) {
