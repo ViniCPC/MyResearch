@@ -1,11 +1,13 @@
-import { IsNumber, IsPositive, IsString } from "class-validator";
+import { Transform } from 'class-transformer';
+import { IsNumber, IsPositive, IsString, MinLength } from 'class-validator';
 
 export class RegisterDonationDto {
-    @IsNumber()
-    @IsPositive()
-    donation!: Number;
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  @IsPositive()
+  amount!: number;
 
-    @IsString()
-    txHash!: string
-
+  @IsString()
+  @MinLength(10)
+  txHash!: string;
 }

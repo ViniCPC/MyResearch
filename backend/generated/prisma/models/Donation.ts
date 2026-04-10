@@ -241,17 +241,17 @@ export type DonationOrderByWithRelationInput = {
 
 export type DonationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  txHash?: string
   AND?: Prisma.DonationWhereInput | Prisma.DonationWhereInput[]
   OR?: Prisma.DonationWhereInput[]
   NOT?: Prisma.DonationWhereInput | Prisma.DonationWhereInput[]
   projectId?: Prisma.StringFilter<"Donation"> | string
   donorId?: Prisma.StringFilter<"Donation"> | string
   amount?: Prisma.DecimalFilter<"Donation"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  txHash?: Prisma.StringNullableFilter<"Donation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   donor?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "txHash">
 
 export type DonationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
