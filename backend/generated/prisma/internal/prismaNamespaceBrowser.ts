@@ -114,6 +114,9 @@ export const MilestoneScalarFieldEnum = {
   order: 'order',
   released: 'released',
   txHash: 'txHash',
+  onChainIndex: 'onChainIndex',
+  releaseTxHash: 'releaseTxHash',
+  releasedAt: 'releasedAt',
   createdAt: 'createdAt'
 } as const
 

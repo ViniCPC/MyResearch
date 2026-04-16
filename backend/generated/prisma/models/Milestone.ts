@@ -29,11 +29,13 @@ export type AggregateMilestone = {
 export type MilestoneAvgAggregateOutputType = {
   amount: runtime.Decimal | null
   order: number | null
+  onChainIndex: number | null
 }
 
 export type MilestoneSumAggregateOutputType = {
   amount: runtime.Decimal | null
   order: number | null
+  onChainIndex: number | null
 }
 
 export type MilestoneMinAggregateOutputType = {
@@ -45,6 +47,9 @@ export type MilestoneMinAggregateOutputType = {
   order: number | null
   released: boolean | null
   txHash: string | null
+  onChainIndex: number | null
+  releaseTxHash: string | null
+  releasedAt: Date | null
   createdAt: Date | null
 }
 
@@ -57,6 +62,9 @@ export type MilestoneMaxAggregateOutputType = {
   order: number | null
   released: boolean | null
   txHash: string | null
+  onChainIndex: number | null
+  releaseTxHash: string | null
+  releasedAt: Date | null
   createdAt: Date | null
 }
 
@@ -69,6 +77,9 @@ export type MilestoneCountAggregateOutputType = {
   order: number
   released: number
   txHash: number
+  onChainIndex: number
+  releaseTxHash: number
+  releasedAt: number
   createdAt: number
   _all: number
 }
@@ -77,11 +88,13 @@ export type MilestoneCountAggregateOutputType = {
 export type MilestoneAvgAggregateInputType = {
   amount?: true
   order?: true
+  onChainIndex?: true
 }
 
 export type MilestoneSumAggregateInputType = {
   amount?: true
   order?: true
+  onChainIndex?: true
 }
 
 export type MilestoneMinAggregateInputType = {
@@ -93,6 +106,9 @@ export type MilestoneMinAggregateInputType = {
   order?: true
   released?: true
   txHash?: true
+  onChainIndex?: true
+  releaseTxHash?: true
+  releasedAt?: true
   createdAt?: true
 }
 
@@ -105,6 +121,9 @@ export type MilestoneMaxAggregateInputType = {
   order?: true
   released?: true
   txHash?: true
+  onChainIndex?: true
+  releaseTxHash?: true
+  releasedAt?: true
   createdAt?: true
 }
 
@@ -117,6 +136,9 @@ export type MilestoneCountAggregateInputType = {
   order?: true
   released?: true
   txHash?: true
+  onChainIndex?: true
+  releaseTxHash?: true
+  releasedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -216,6 +238,9 @@ export type MilestoneGroupByOutputType = {
   order: number
   released: boolean
   txHash: string | null
+  onChainIndex: number | null
+  releaseTxHash: string | null
+  releasedAt: Date | null
   createdAt: Date
   _count: MilestoneCountAggregateOutputType | null
   _avg: MilestoneAvgAggregateOutputType | null
@@ -251,6 +276,9 @@ export type MilestoneWhereInput = {
   order?: Prisma.IntFilter<"Milestone"> | number
   released?: Prisma.BoolFilter<"Milestone"> | boolean
   txHash?: Prisma.StringNullableFilter<"Milestone"> | string | null
+  onChainIndex?: Prisma.IntNullableFilter<"Milestone"> | number | null
+  releaseTxHash?: Prisma.StringNullableFilter<"Milestone"> | string | null
+  releasedAt?: Prisma.DateTimeNullableFilter<"Milestone"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Milestone"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }
@@ -264,12 +292,16 @@ export type MilestoneOrderByWithRelationInput = {
   order?: Prisma.SortOrder
   released?: Prisma.SortOrder
   txHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseTxHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type MilestoneWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  releaseTxHash?: string
   projectId_order?: Prisma.MilestoneProjectIdOrderCompoundUniqueInput
   AND?: Prisma.MilestoneWhereInput | Prisma.MilestoneWhereInput[]
   OR?: Prisma.MilestoneWhereInput[]
@@ -281,9 +313,11 @@ export type MilestoneWhereUniqueInput = Prisma.AtLeast<{
   order?: Prisma.IntFilter<"Milestone"> | number
   released?: Prisma.BoolFilter<"Milestone"> | boolean
   txHash?: Prisma.StringNullableFilter<"Milestone"> | string | null
+  onChainIndex?: Prisma.IntNullableFilter<"Milestone"> | number | null
+  releasedAt?: Prisma.DateTimeNullableFilter<"Milestone"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Milestone"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-}, "id" | "projectId_order">
+}, "id" | "releaseTxHash" | "projectId_order">
 
 export type MilestoneOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -294,6 +328,9 @@ export type MilestoneOrderByWithAggregationInput = {
   order?: Prisma.SortOrder
   released?: Prisma.SortOrder
   txHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseTxHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MilestoneCountOrderByAggregateInput
   _avg?: Prisma.MilestoneAvgOrderByAggregateInput
@@ -314,6 +351,9 @@ export type MilestoneScalarWhereWithAggregatesInput = {
   order?: Prisma.IntWithAggregatesFilter<"Milestone"> | number
   released?: Prisma.BoolWithAggregatesFilter<"Milestone"> | boolean
   txHash?: Prisma.StringNullableWithAggregatesFilter<"Milestone"> | string | null
+  onChainIndex?: Prisma.IntNullableWithAggregatesFilter<"Milestone"> | number | null
+  releaseTxHash?: Prisma.StringNullableWithAggregatesFilter<"Milestone"> | string | null
+  releasedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Milestone"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Milestone"> | Date | string
 }
 
@@ -325,6 +365,9 @@ export type MilestoneCreateInput = {
   order: number
   released?: boolean
   txHash?: string | null
+  onChainIndex?: number | null
+  releaseTxHash?: string | null
+  releasedAt?: Date | string | null
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutMilestonesInput
 }
@@ -338,6 +381,9 @@ export type MilestoneUncheckedCreateInput = {
   order: number
   released?: boolean
   txHash?: string | null
+  onChainIndex?: number | null
+  releaseTxHash?: string | null
+  releasedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -349,6 +395,9 @@ export type MilestoneUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutMilestonesNestedInput
 }
@@ -362,6 +411,9 @@ export type MilestoneUncheckedUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -374,6 +426,9 @@ export type MilestoneCreateManyInput = {
   order: number
   released?: boolean
   txHash?: string | null
+  onChainIndex?: number | null
+  releaseTxHash?: string | null
+  releasedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -385,6 +440,9 @@ export type MilestoneUpdateManyMutationInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -397,6 +455,9 @@ export type MilestoneUncheckedUpdateManyInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -424,12 +485,16 @@ export type MilestoneCountOrderByAggregateInput = {
   order?: Prisma.SortOrder
   released?: Prisma.SortOrder
   txHash?: Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrder
+  releaseTxHash?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type MilestoneAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrder
 }
 
 export type MilestoneMaxOrderByAggregateInput = {
@@ -441,6 +506,9 @@ export type MilestoneMaxOrderByAggregateInput = {
   order?: Prisma.SortOrder
   released?: Prisma.SortOrder
   txHash?: Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrder
+  releaseTxHash?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -453,12 +521,16 @@ export type MilestoneMinOrderByAggregateInput = {
   order?: Prisma.SortOrder
   released?: Prisma.SortOrder
   txHash?: Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrder
+  releaseTxHash?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type MilestoneSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  onChainIndex?: Prisma.SortOrder
 }
 
 export type MilestoneCreateNestedManyWithoutProjectInput = {
@@ -515,6 +587,14 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type MilestoneCreateWithoutProjectInput = {
   id?: string
   title: string
@@ -523,6 +603,9 @@ export type MilestoneCreateWithoutProjectInput = {
   order: number
   released?: boolean
   txHash?: string | null
+  onChainIndex?: number | null
+  releaseTxHash?: string | null
+  releasedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -534,6 +617,9 @@ export type MilestoneUncheckedCreateWithoutProjectInput = {
   order: number
   released?: boolean
   txHash?: string | null
+  onChainIndex?: number | null
+  releaseTxHash?: string | null
+  releasedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -575,6 +661,9 @@ export type MilestoneScalarWhereInput = {
   order?: Prisma.IntFilter<"Milestone"> | number
   released?: Prisma.BoolFilter<"Milestone"> | boolean
   txHash?: Prisma.StringNullableFilter<"Milestone"> | string | null
+  onChainIndex?: Prisma.IntNullableFilter<"Milestone"> | number | null
+  releaseTxHash?: Prisma.StringNullableFilter<"Milestone"> | string | null
+  releasedAt?: Prisma.DateTimeNullableFilter<"Milestone"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Milestone"> | Date | string
 }
 
@@ -586,6 +675,9 @@ export type MilestoneCreateManyProjectInput = {
   order: number
   released?: boolean
   txHash?: string | null
+  onChainIndex?: number | null
+  releaseTxHash?: string | null
+  releasedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -597,6 +689,9 @@ export type MilestoneUpdateWithoutProjectInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -608,6 +703,9 @@ export type MilestoneUncheckedUpdateWithoutProjectInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -619,6 +717,9 @@ export type MilestoneUncheckedUpdateManyWithoutProjectInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   released?: Prisma.BoolFieldUpdateOperationsInput | boolean
   txHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onChainIndex?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  releaseTxHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -633,6 +734,9 @@ export type MilestoneSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   order?: boolean
   released?: boolean
   txHash?: boolean
+  onChainIndex?: boolean
+  releaseTxHash?: boolean
+  releasedAt?: boolean
   createdAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["milestone"]>
@@ -646,6 +750,9 @@ export type MilestoneSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   order?: boolean
   released?: boolean
   txHash?: boolean
+  onChainIndex?: boolean
+  releaseTxHash?: boolean
+  releasedAt?: boolean
   createdAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["milestone"]>
@@ -659,6 +766,9 @@ export type MilestoneSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   order?: boolean
   released?: boolean
   txHash?: boolean
+  onChainIndex?: boolean
+  releaseTxHash?: boolean
+  releasedAt?: boolean
   createdAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["milestone"]>
@@ -672,10 +782,13 @@ export type MilestoneSelectScalar = {
   order?: boolean
   released?: boolean
   txHash?: boolean
+  onChainIndex?: boolean
+  releaseTxHash?: boolean
+  releasedAt?: boolean
   createdAt?: boolean
 }
 
-export type MilestoneOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "amount" | "order" | "released" | "txHash" | "createdAt", ExtArgs["result"]["milestone"]>
+export type MilestoneOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "amount" | "order" | "released" | "txHash" | "onChainIndex" | "releaseTxHash" | "releasedAt" | "createdAt", ExtArgs["result"]["milestone"]>
 export type MilestoneInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }
@@ -700,6 +813,9 @@ export type $MilestonePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     order: number
     released: boolean
     txHash: string | null
+    onChainIndex: number | null
+    releaseTxHash: string | null
+    releasedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["milestone"]>
   composites: {}
@@ -1133,6 +1249,9 @@ export interface MilestoneFieldRefs {
   readonly order: Prisma.FieldRef<"Milestone", 'Int'>
   readonly released: Prisma.FieldRef<"Milestone", 'Boolean'>
   readonly txHash: Prisma.FieldRef<"Milestone", 'String'>
+  readonly onChainIndex: Prisma.FieldRef<"Milestone", 'Int'>
+  readonly releaseTxHash: Prisma.FieldRef<"Milestone", 'String'>
+  readonly releasedAt: Prisma.FieldRef<"Milestone", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Milestone", 'DateTime'>
 }
     

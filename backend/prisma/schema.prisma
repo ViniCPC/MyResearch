@@ -54,6 +54,9 @@ model Milestone {
   order       Int
   released    Boolean  @default(false)
   txHash      String?
+  onChainIndex Int?
+  releaseTxHash String? @unique
+  releasedAt   DateTime?
   createdAt   DateTime @default(now())
 
   project     Project  @relation(fields: [projectId], references: [id])

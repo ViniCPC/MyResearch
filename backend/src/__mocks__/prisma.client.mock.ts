@@ -156,6 +156,9 @@ type Milestone = {
   order: number;
   released: boolean;
   txHash?: string | null;
+  onChainIndex?: number | null;
+  releaseTxHash?: string | null;
+  releasedAt?: Date | null;
   createdAt: Date;
 };
 
@@ -372,6 +375,9 @@ export class PrismaClient {
         order: Number(args.data.order ?? 1),
         released: args.data.released ?? false,
         txHash: args.data.txHash ?? null,
+        onChainIndex: args.data.onChainIndex ?? null,
+        releaseTxHash: args.data.releaseTxHash ?? null,
+        releasedAt: args.data.releasedAt ?? null,
         createdAt: now,
       };
       this.store.milestones.push(milestone);
@@ -413,6 +419,16 @@ export class PrismaClient {
       const total = milestones.reduce((sum, item) => sum + Number(item.amount ?? 0), 0);
       return { _sum: { amount: total } };
     }),
+    update: jest.fn(
+      async (args: { where: Where; data: Partial<Milestone>; select?: any }) => {
+        const milestone = this.store.milestones.find((item) =>
+          matchWhere(item, args.where),
+        );
+        if (!milestone) return null;
+        Object.assign(milestone, args.data);
+        return applySelect(milestone, args.select);
+      },
+    ),
     deleteMany: jest.fn(async (args?: { where?: Where }) => {
       const before = this.store.milestones.length;
       if (!args?.where) {

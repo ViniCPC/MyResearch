@@ -12,6 +12,7 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: ['/node_modules/'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
   collectCoverageFrom: ['src/**/*.(t|j)s'],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',

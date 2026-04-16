@@ -1,40 +1,50 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Contract, ContractFactory, JsonRpcProvider, Wallet, formatEther, parseEther } from 'ethers';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-import escrowArtifact from './abi/ResearchProjectEscrow.json';
+const escrowArtifact = require('./abi/ResearchProjectEscrow.json');
 
 @Injectable()
 export class BlockchainService {
-  private readonly provider: JsonRpcProvider;
-  private readonly wallet: Wallet;
+  private provider?: JsonRpcProvider;
+  private wallet?: Wallet;
 
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly prisma: PrismaService,
-  ) {
-    const rpcUrl = this.configService.get<string>('BLOCKCHAIN_RPC_URL');
-    const privateKey = this.configService.get<string>('BLOCKCHAIN_PRIVATE_KEY');
+  constructor(private readonly prisma: PrismaService) {
+    const rpcUrl = process.env.BLOCKCHAIN_RPC_URL;
+    const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
+
+    if (rpcUrl && privateKey) {
+      this.provider = new JsonRpcProvider(rpcUrl);
+      this.wallet = new Wallet(privateKey, this.provider);
+    }
+  }
+
+  private ensureBlockchainConfigured() {
+    const rpcUrl = process.env.BLOCKCHAIN_RPC_URL;
+    const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
 
     if (!rpcUrl) {
-      throw new Error('BLOCKCHAIN_RPC_URL não definido');
+      throw new BadRequestException('BLOCKCHAIN_RPC_URL não definido');
     }
 
     if (!privateKey) {
-      throw new Error('BLOCKCHAIN_PRIVATE_KEY não definido');
+      throw new BadRequestException('BLOCKCHAIN_PRIVATE_KEY não definido');
     }
 
-    this.provider = new JsonRpcProvider(rpcUrl);
-    this.wallet = new Wallet(privateKey, this.provider);
+    if (!this.provider || !this.wallet) {
+      this.provider = new JsonRpcProvider(rpcUrl);
+      this.wallet = new Wallet(privateKey, this.provider);
+    }
   }
 
   private getReadContract(contractAddress: string) {
-    return new Contract(contractAddress, escrowArtifact.abi, this.provider);
+    this.ensureBlockchainConfigured();
+    return new Contract(contractAddress, escrowArtifact.abi, this.provider as JsonRpcProvider);
   }
 
   private getWriteContract(contractAddress: string) {
-    return new Contract(contractAddress, escrowArtifact.abi, this.wallet);
+    this.ensureBlockchainConfigured();
+    return new Contract(contractAddress, escrowArtifact.abi, this.wallet as Wallet);
   }
 
   async deployProjectContract(projectId: string, userId: string) {
@@ -67,22 +77,25 @@ export class BlockchainService {
     if (!project.milestones.length) {
       throw new BadRequestException('Projeto precisa ter milestones antes do deploy');
     }
+    
+    this.ensureBlockchainConfigured();
 
     const factory = new ContractFactory(
       escrowArtifact.abi,
       escrowArtifact.bytecode,
-      this.wallet,
+      this.wallet as Wallet,
     );
 
-    const contract = await factory.deploy(project.owner.walletAddress);
-    await contract.waitForDeployment();
+    const deployment = await factory.deploy(project.owner.walletAddress);
+    await deployment.waitForDeployment();
 
-    const contractAddress = await contract.getAddress();
+    const contractAddress = await deployment.getAddress();
+    const contract = this.getWriteContract(contractAddress);
 
     for (let index = 0; index < project.milestones.length; index++) {
       const milestone = project.milestones[index];
 
-      const tx = await contract.addMilestone(
+      const tx = await contract['addMilestone'](
         milestone.title,
         parseEther(String(milestone.amount)),
       );
@@ -106,7 +119,7 @@ export class BlockchainService {
 
     return {
       contractAddress,
-      deploymentTxHash: contract.deploymentTransaction()?.hash ?? null,
+      deploymentTxHash: deployment.deploymentTransaction()?.hash ?? null,
     };
   }
 
@@ -146,7 +159,7 @@ export class BlockchainService {
 
     const contract = this.getWriteContract(project.contractAddress);
 
-    const tx = await contract.releaseMilestone(milestone.onChainIndex);
+    const tx = await contract['releaseMilestone'](milestone.onChainIndex);
     const receipt = await tx.wait();
 
     await this.prisma.milestone.update({
@@ -154,6 +167,7 @@ export class BlockchainService {
       data: {
         releaseTxHash: tx.hash,
         releasedAt: new Date(),
+        released: true,
       },
     });
 
@@ -180,13 +194,19 @@ export class BlockchainService {
       throw new BadRequestException('Projeto ainda não possui contrato');
     }
 
-    const code = await this.provider.getCode(project.contractAddress);
+    this.ensureBlockchainConfigured();
+
+    const code = await (this.provider as JsonRpcProvider).getCode(
+      project.contractAddress,
+    );
 
     if (code === '0x') {
       throw new BadRequestException('Nenhum contrato encontrado nesse endereço');
     }
 
-    const balanceWei = await this.provider.getBalance(project.contractAddress);
+    const balanceWei = await (this.provider as JsonRpcProvider).getBalance(
+      project.contractAddress,
+    );
     const contract = this.getReadContract(project.contractAddress);
 
     const researcher = await contract.researcher();

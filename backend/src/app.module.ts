@@ -5,9 +5,16 @@ import { AuthModule } from './auth/authUser/auth.module';
 import { PublicProjectsModule } from './projects/public/public-projects.module';
 import { ResearcherProjectsModule } from './projects/researcher/projects.module';
 import { DonationsModule } from './donation/donations.module';
+import { BlockchainModule } from './blockchain/blockchain.module';
 
 @Module({
-  imports: [AuthModule, PublicProjectsModule, ResearcherProjectsModule, DonationsModule],
+  imports: [
+    AuthModule,
+    PublicProjectsModule,
+    ResearcherProjectsModule,
+    DonationsModule,
+    BlockchainModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
