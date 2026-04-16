@@ -8,8 +8,14 @@
     export class AuthController {
         constructor(private readonly authService: AuthService) {}
 
-        @Post('regiter')
+        @Post('register')
         registerDonor(@Body() dto: CreateUserDto) {
+            return this.authService.registerUser(dto);
+        }
+
+        // backward-compatible alias kept to avoid breaking existing clients
+        @Post('regiter')
+        registerDonorLegacy(@Body() dto: CreateUserDto) {
             return this.authService.registerUser(dto);
         }
 
