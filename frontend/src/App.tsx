@@ -1,12 +1,7 @@
-import './App.css'
+import { AppRoutes } from "./routes/AppRoutes";
 
 function App() {
-  return (
-    <div>
-      <h1>MyResearch</h1>
-      <p>Frontend iniciado com React + Vite</p>
-    </div>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

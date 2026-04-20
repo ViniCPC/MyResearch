@@ -17,11 +17,13 @@ export interface LoginResponse {
 }
 
 export async function registerResearcher(data: RegisterData) {
-  const response = await api.post("/auth/register-researcher", data);
+  const response = await api.post("/auth/researcher/register", data);
   return response.data;
 }
 
 export async function login(data: LoginData) {
-  const response = await api.post<LoginResponse>("/auth/login", data);
-  return response.data;
+  const response = await api.post<{ access_token: string }>("/auth/login", data);
+  return {
+    accessToken: response.data.access_token,
+  };
 }

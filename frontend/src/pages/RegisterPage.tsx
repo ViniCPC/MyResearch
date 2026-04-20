@@ -1,6 +1,24 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { registerResearcher } from "../service/auth.service"; 
+import { registerResearcher } from "../service/auth.service";
+
+function getApiErrorMessage(error: any, fallbackMessage: string) {
+  const message = error?.response?.data?.message;
+
+  if (Array.isArray(message)) {
+    return message.join(", ");
+  }
+
+  if (typeof message === "string" && message.length > 0) {
+    return message;
+  }
+
+  if (error?.code === "ERR_NETWORK") {
+    return "Nao foi possivel conectar ao backend. Confirme se a API esta rodando em http://localhost:3000.";
+  }
+
+  return fallbackMessage;
+}
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -15,9 +33,7 @@ export function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function handleChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
 
     setFormData((prev) => ({
@@ -35,9 +51,7 @@ export function RegisterPage() {
       await registerResearcher(formData);
       navigate("/login");
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message || "Erro ao cadastrar usuário"
-      );
+      setError(getApiErrorMessage(err, "Erro ao cadastrar usuario"));
     } finally {
       setLoading(false);
     }
@@ -47,7 +61,10 @@ export function RegisterPage() {
     <div style={{ padding: "2rem" }}>
       <h1>Cadastro</h1>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem", maxWidth: "400px" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "grid", gap: "1rem", maxWidth: "400px" }}
+      >
         <input
           type="text"
           name="name"
@@ -75,7 +92,7 @@ export function RegisterPage() {
         <input
           type="text"
           name="institution"
-          placeholder="Instituição"
+          placeholder="Instituicao"
           value={formData.institution}
           onChange={handleChange}
         />
@@ -88,7 +105,7 @@ export function RegisterPage() {
       {error && <p>{error}</p>}
 
       <p>
-        Já tem conta? <Link to="/login">Entrar</Link>
+        Ja tem conta? <Link to="/login">Entrar</Link>
       </p>
     </div>
   );
