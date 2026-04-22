@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "../pages/LoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { DashboardPage } from "../pages/DashboardPage";
+import { ProjectsPage } from "../pages/ProjectsPage";
+import { ProjectDetailPage } from "../pages/ProjectDetailPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 export function AppRoutes() {
@@ -18,6 +20,8 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/projects" element={<ProjectsPage />} />
+      <Route path="/projects/:id" element={<ProjectDetailPage />} />
     </Routes>
   );
 }
