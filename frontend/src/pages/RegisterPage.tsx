@@ -1,41 +1,35 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { registerResearcher } from "../service/auth.service";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { registerResearcher, registerUser } from "../service/auth.service";
+import { getApiErrorMessage } from "../utils/apiError";
 
-function getApiErrorMessage(error: any, fallbackMessage: string) {
-  const message = error?.response?.data?.message;
-
-  if (Array.isArray(message)) {
-    return message.join(", ");
-  }
-
-  if (typeof message === "string" && message.length > 0) {
-    return message;
-  }
-
-  if (error?.code === "ERR_NETWORK") {
-    return "Nao foi possivel conectar ao backend. Confirme se a API esta rodando em http://localhost:3000.";
-  }
-
-  return fallbackMessage;
-}
+type RegisterMode = "COMMON" | "RESEARCHER";
 
 export function RegisterPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
+  const [mode, setMode] = useState<RegisterMode>("COMMON");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     institution: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type === "researcher") {
+      setMode("RESEARCHER");
+    } else if (type === "common") {
+      setMode("COMMON");
+    }
+  }, [searchParams]);
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -48,7 +42,21 @@ export function RegisterPage() {
     setError("");
 
     try {
-      await registerResearcher(formData);
+      if (mode === "RESEARCHER") {
+        await registerResearcher({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          institution: formData.institution,
+        });
+      } else {
+        await registerUser({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+      }
+
       navigate("/login");
     } catch (err: any) {
       setError(getApiErrorMessage(err, "Erro ao cadastrar usuario"));
@@ -58,55 +66,121 @@ export function RegisterPage() {
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Cadastro</h1>
+    <div className="auth-shell">
+      <div className="auth-card">
+        <div className="mb-5 space-y-1">
+          <h1 className="title-xl">Cadastro</h1>
+          <p className="muted-text text-sm">
+            Crie sua conta e escolha o tipo de perfil.
+          </p>
+        </div>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "grid", gap: "1rem", maxWidth: "400px" }}
-      >
-        <input
-          type="text"
-          name="name"
-          placeholder="Nome"
-          value={formData.name}
-          onChange={handleChange}
-        />
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setMode("COMMON")}
+            className={`btn ${mode === "COMMON" ? "btn-primary" : "btn-secondary"}`}
+          >
+            Cadastro comum
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("RESEARCHER")}
+            className={`btn ${mode === "RESEARCHER" ? "btn-primary" : "btn-secondary"}`}
+          >
+            Cadastro pesquisador
+          </button>
+        </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="E-mail"
-          value={formData.email}
-          onChange={handleChange}
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="label-text">
+              Nome completo
+            </label>
+            <input
+              id="name"
+              type="text"
+              name="name"
+              placeholder="Seu nome"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="input-base"
+            />
+          </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Senha"
-          value={formData.password}
-          onChange={handleChange}
-        />
+          <div>
+            <label htmlFor="email" className="label-text">
+              E-mail
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="voce@email.com"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="input-base"
+            />
+          </div>
 
-        <input
-          type="text"
-          name="institution"
-          placeholder="Instituicao"
-          value={formData.institution}
-          onChange={handleChange}
-        />
+          <div>
+            <label htmlFor="password" className="label-text">
+              Senha
+            </label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Minimo de 6 caracteres"
+              value={formData.password}
+              onChange={handleChange}
+              minLength={6}
+              required
+              className="input-base"
+            />
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Cadastrando..." : "Cadastrar"}
-        </button>
-      </form>
+          {mode === "RESEARCHER" && (
+            <div>
+              <label htmlFor="institution" className="label-text">
+                Instituicao
+              </label>
+              <input
+                id="institution"
+                type="text"
+                name="institution"
+                placeholder="Nome da instituicao"
+                value={formData.institution}
+                onChange={handleChange}
+                required
+                className="input-base"
+              />
+            </div>
+          )}
 
-      {error && <p>{error}</p>}
+          <button type="submit" disabled={loading} className="btn btn-primary w-full">
+            {loading ? (
+              <>
+                <span className="loader h-4 w-4 border-white/40 border-t-white" />
+                Cadastrando...
+              </>
+            ) : (
+              "Cadastrar"
+            )}
+          </button>
+        </form>
 
-      <p>
-        Ja tem conta? <Link to="/login">Entrar</Link>
-      </p>
+        {error && <p className="alert-error mt-4">{error}</p>}
+
+        <p className="muted-text mt-5 text-sm">
+          Ja tem conta?{" "}
+          <Link to="/login" className="font-semibold text-blue-700 hover:underline">
+            Entrar
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

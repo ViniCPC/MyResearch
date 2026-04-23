@@ -1,22 +1,23 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProjects } from "../service/project.service";
 import type { Project, ProjectStatus, QueryProjectParams } from "../service/project.service";
+import { getApiErrorMessage } from "../utils/apiError";
 
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   DRAFT: "Rascunho",
   ACTIVE: "Ativo",
   FUNDED: "Financiado",
-  COMPLETED: "Concluído",
+  COMPLETED: "Concluido",
   CANCELLED: "Cancelado",
 };
 
-const STATUS_COLOR: Record<ProjectStatus, string> = {
-  DRAFT: "#888",
-  ACTIVE: "#2563eb",
-  FUNDED: "#16a34a",
-  COMPLETED: "#7c3aed",
-  CANCELLED: "#dc2626",
+const STATUS_CLASS: Record<ProjectStatus, string> = {
+  DRAFT: "bg-slate-500 text-white",
+  ACTIVE: "bg-blue-600 text-white",
+  FUNDED: "bg-emerald-600 text-white",
+  COMPLETED: "bg-violet-600 text-white",
+  CANCELLED: "bg-red-600 text-white",
 };
 
 function formatCurrency(value: string | number) {
@@ -34,65 +35,26 @@ function ProjectCard({
   onClick: () => void;
 }) {
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      style={{
-        border: "1px solid #e5e7eb",
-        borderRadius: "8px",
-        padding: "1.25rem",
-        cursor: "pointer",
-        background: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem",
-        transition: "box-shadow 0.15s",
-      }}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)")
-      }
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      className="panel flex h-full flex-col gap-2 text-left transition hover:-translate-y-0.5 hover:shadow-md"
     >
-      <div
-        style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}
-      >
-        <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
-          {project.title}
-        </h3>
-        <span
-          style={{
-            background: STATUS_COLOR[project.status],
-            color: "#fff",
-            borderRadius: "4px",
-            padding: "2px 8px",
-            fontSize: "0.75rem",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="text-base font-semibold">{project.title}</h3>
+        <span className={`status-chip shrink-0 ${STATUS_CLASS[project.status]}`}>
           {STATUS_LABEL[project.status]}
         </span>
       </div>
 
-      <p
-        style={{
-          margin: 0,
-          color: "#6b7280",
-          fontSize: "0.875rem",
-          display: "-webkit-box",
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-      >
-        {project.description}
-      </p>
+      <p className="muted-text line-clamp-3 text-sm">{project.description}</p>
 
-      <div style={{ marginTop: "auto", paddingTop: "0.5rem" }}>
-        <span style={{ fontSize: "0.875rem", color: "#374151" }}>
+      <div className="mt-auto pt-1">
+        <span className="text-sm">
           Meta: <strong>{formatCurrency(project.goalAmount)}</strong>
         </span>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -107,7 +69,7 @@ export function ProjectsPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchProjects();
+    void fetchProjects();
   }, [page, statusFilter]);
 
   async function fetchProjects(searchOverride?: string) {
@@ -129,98 +91,87 @@ export function ProjectsPage() {
       const result = await getProjects(params);
       setProjects(result.data);
       setTotalPages(result.meta.totalPages);
-    } catch {
-      setError("Erro ao carregar projetos.");
+    } catch (err: any) {
+      setError(getApiErrorMessage(err, "Erro ao carregar projetos."));
     } finally {
       setLoading(false);
     }
   }
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSearch(event: React.FormEvent) {
+    event.preventDefault();
     setPage(1);
-    fetchProjects(search);
+    void fetchProjects(search);
   }
 
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setStatusFilter(e.target.value as ProjectStatus | "");
+  function handleStatusChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    setStatusFilter(event.target.value as ProjectStatus | "");
     setPage(1);
   }
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "1100px", margin: "0 auto" }}>
-      <h1 style={{ marginBottom: "1.5rem" }}>Projetos de Pesquisa</h1>
+    <div className="page-shell">
+      <h1 className="title-xl mb-6">Projetos de Pesquisa</h1>
 
-      <form
-        onSubmit={handleSearch}
-        style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}
-      >
-        <input
-          type="text"
-          placeholder="Buscar por título ou descrição..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            flex: 1,
-            minWidth: "200px",
-            padding: "0.5rem 0.75rem",
-            border: "1px solid #d1d5db",
-            borderRadius: "6px",
-            fontSize: "0.9rem",
-          }}
-        />
+      <form onSubmit={handleSearch} className="panel mb-5 grid gap-3 md:grid-cols-[1fr_auto_auto]">
+        <div>
+          <label htmlFor="search" className="label-text">
+            Buscar projeto
+          </label>
+          <input
+            id="search"
+            type="text"
+            placeholder="Titulo ou descricao..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="input-base"
+          />
+        </div>
 
-        <select
-          value={statusFilter}
-          onChange={handleStatusChange}
-          style={{
-            padding: "0.5rem 0.75rem",
-            border: "1px solid #d1d5db",
-            borderRadius: "6px",
-            fontSize: "0.9rem",
-          }}
-        >
-          <option value="">Todos os status</option>
-          {Object.entries(STATUS_LABEL).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+        <div>
+          <label htmlFor="statusFilter" className="label-text">
+            Status
+          </label>
+          <select
+            id="statusFilter"
+            value={statusFilter}
+            onChange={handleStatusChange}
+            className="input-base"
+          >
+            <option value="">Todos os status</option>
+            {Object.entries(STATUS_LABEL).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <button
-          type="submit"
-          style={{
-            padding: "0.5rem 1.25rem",
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "0.9rem",
-          }}
-        >
-          Buscar
-        </button>
+        <div className="flex items-end">
+          <button type="submit" className="btn btn-primary w-full md:w-auto">
+            Buscar
+          </button>
+        </div>
       </form>
 
-      {loading && <p>Carregando projetos...</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {loading && (
+        <div className="panel-soft mb-4 flex items-center gap-3">
+          <span className="loader" />
+          <p className="muted-text text-sm">Carregando projetos...</p>
+        </div>
+      )}
+
+      {error && <p className="alert-error mb-4">{error}</p>}
 
       {!loading && !error && projects.length === 0 && (
-        <p style={{ color: "#6b7280" }}>Nenhum projeto encontrado.</p>
+        <div className="panel">
+          <p className="muted-text text-sm">Nenhum projeto encontrado.</p>
+        </div>
       )}
 
       {!loading && !error && projects.length > 0 && (
         <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: "1rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+          <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {projects.map((project) => (
               <ProjectCard
                 key={project.id}
@@ -230,23 +181,25 @@ export function ProjectsPage() {
             ))}
           </div>
 
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <div className="panel flex flex-wrap items-center gap-2">
             <button
+              type="button"
               disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-              style={{ padding: "0.4rem 0.9rem", cursor: page <= 1 ? "not-allowed" : "pointer" }}
+              onClick={() => setPage((value) => value - 1)}
+              className="btn btn-secondary"
             >
               Anterior
             </button>
-            <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-              Página {page} de {totalPages}
+            <span className="muted-text text-sm">
+              Pagina {page} de {totalPages}
             </span>
             <button
+              type="button"
               disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              style={{ padding: "0.4rem 0.9rem", cursor: page >= totalPages ? "not-allowed" : "pointer" }}
+              onClick={() => setPage((value) => value + 1)}
+              className="btn btn-secondary"
             >
-              Próxima
+              Proxima
             </button>
           </div>
         </>

@@ -59,6 +59,21 @@ export interface QueryProjectParams {
   order?: "asc" | "desc";
 }
 
+export interface CreateProjectData {
+  title: string;
+  description: string;
+  goalAmount: number;
+  imageUrl?: string;
+  contractAddress?: string;
+  status?: ProjectStatus;
+}
+
+export interface CreateMilestoneData {
+  title: string;
+  description: string;
+  amount: number;
+}
+
 export async function getProjects(
   params?: QueryProjectParams,
 ): Promise<ProjectsResponse> {
@@ -78,5 +93,25 @@ export async function getProjectMilestones(id: string): Promise<Milestone[]> {
 
 export async function getProjectDonations(id: string): Promise<Donation[]> {
   const response = await api.get<Donation[]>(`/projects/${id}/donations`);
+  return response.data;
+}
+
+export async function getResearcherProjects(
+  params?: QueryProjectParams,
+): Promise<ProjectsResponse> {
+  const response = await api.get<ProjectsResponse>("/researcher/projects", { params });
+  return response.data;
+}
+
+export async function createResearcherProject(data: CreateProjectData): Promise<Project> {
+  const response = await api.post<Project>("/researcher/projects", data);
+  return response.data;
+}
+
+export async function createProjectMilestone(
+  projectId: string,
+  data: CreateMilestoneData,
+): Promise<Milestone> {
+  const response = await api.post<Milestone>(`/projects/${projectId}/milestones`, data);
   return response.data;
 }
